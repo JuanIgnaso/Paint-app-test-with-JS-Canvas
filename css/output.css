@@ -872,6 +872,11 @@ h6 {
   background-color: rgb(147 197 253 / 0.5);
 }
 
+.bg-red-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
+}
+
 .p-1 {
   padding: 0.25rem;
 }

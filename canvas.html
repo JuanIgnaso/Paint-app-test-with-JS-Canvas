@@ -46,10 +46,14 @@
                     <button id="pencil" class="canvas-button bg-rose-200 tool group">🖌️<span class="tool-name">Paint</span></button>
                     <button id="color_picker" class="canvas-button bg-rose-200 tool group">🩸<span class="tool-name">Color Picker</span></button>
                     <button id="square" class="canvas-button tool group bg-rose-200">⏹️<span class="tool-name">Draw square</span></button>
-                    <button id="circle" class="canvas-button tool group bg-rose-200">⭕<span class="tool-name">Draw circle</span></button>
+                    <button id="circle" onclick="console.log('hola')" class="canvas-button tool group bg-rose-200">⭕<span class="tool-name">Draw circle</span></button>
                     <button id="line" class="canvas-button tool group bg-rose-200">➖<span class="tool-name">Draw Line</span></button>
                     <button id="eraser" class="canvas-button tool group bg-rose-200">💊<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Eraser</span></button>
                     <button class="canvas-button group bg-rose-200">🪣<span class="tool-name">Color Bucket</span></button>
+                </div>
+                <div id="fill_figure_menu" class="hidden gap-3">
+                    <label for="" class="flex gap-2">Fill<input type="radio" name="fill" id="1"></label>
+                    <label for="" class="flex gap-2">No fill<input type="radio" name="fill" id="0"></label>
                 </div>
             </div>
 
@@ -191,6 +195,7 @@
                 }else{
                     ctx.lineTo(coords.x,coords.y);
                     ctx.stroke();
+                    ctx.save();
                     shapeStart = false;
                 }
             }
@@ -212,6 +217,7 @@
                     ctx.strokeRect(square.x, square.y, square.width, square.height);
                     square.x = square.y = square.width = square.height = undefined;
                     shapeStart = false;
+                    ctx.save();
                     removeRef();
                 }
             }
