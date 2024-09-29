@@ -7,6 +7,8 @@
     <title>Canvas 🖌️</title>
 </head>
 <body class="bg-rose-100">
+
+
     <h1 class="p-2 text-center text-orange-400">🖌️ Canvas 🎨</h1>
 
     <main  class="flex flex-col justify-center">
@@ -40,14 +42,13 @@
             <!-- Herramientas -->
             <div class="flex flex-col items-center gap-3 p-2">
                 <h4 class="text-orange-400">Tools</h4>
-                <div class="grid grid-cols-4 gap-2 justify-items-center lg:grid-cols-7 xl:grid-cols-9">
+                <div class="grid grid-cols-4 gap-2 justify-items-center lg:grid-cols-7 xl:grid-cols-8">
                     <button id="pencil" class="canvas-button bg-rose-200 tool group">🖌️<span class="tool-name">Paint</span></button>
                     <button id="color_picker" class="canvas-button bg-rose-200 tool group">🩸<span class="tool-name">Color Picker</span></button>
                     <button id="square" class="canvas-button tool group bg-rose-200">⏹️<span class="tool-name">Draw square</span></button>
                     <button id="circle" class="canvas-button tool group bg-rose-200">⭕<span class="tool-name">Draw circle</span></button>
                     <button id="line" class="canvas-button tool group bg-rose-200">➖<span class="tool-name">Draw Line</span></button>
                     <button id="eraser" class="canvas-button tool group bg-rose-200">💊<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Eraser</span></button>
-                    <button class="canvas-button group bg-rose-200">🎨<input class="absolute opacity-0" type="color" name="" id="brush_color"><span class="tool-name">Color picker</span></button>
                     <button class="canvas-button group bg-rose-200">🪣<span class="tool-name">Color Bucket</span></button>
                 </div>
             </div>
@@ -57,15 +58,17 @@
                 <h4 class="text-orange-400">Current Color</h4>
                 <div class="flex justify-center gap-3">
                     <div class="flex justify-center gap-2">
-                        <span class="self-center font-bold text-red-600">Line color</span><div id="curr_color" class="relative flex justify-center w-12 p-2 bg-black border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"></div>
+                        <span class="self-center font-bold text-red-600">Line color</span><div id="curr_stroke_color" class="relative flex justify-center w-12 p-2 bg-black border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="brush_color"></div>
                     </div>
                     <div class="flex justify-center gap-2"></div>
-                        <span class="self-center font-bold text-red-600">Fill color</span><div id="curr_fill_color" class="relative flex justify-center w-12 p-2 bg-white border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"></div>
+                        <span class="self-center font-bold text-red-600">Fill color</span><div id="curr_fill_color" class="relative flex justify-center w-12 p-2 bg-white border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="fill_color"></div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+
     <!-- SCRIPT -->
     <script>
         /*
@@ -80,13 +83,15 @@
 
         let strokeCurrentColor = '#000000'; //Guarda el color actual
 
-        let currentFillColor = '#ffffff'; //Guarda el color de relleno actual
+        let fillCurrentColor = '#ffffff'; //Guarda el color de relleno actual
 
         ctx.strokeStyle = strokeCurrentColor; //Color por defecto del pincel.
 
         ctx.lineWidth = 4; //Grosor por defecto del pincel.
 
-        const brush_color = document.querySelector('#brush_color'); //Input de color para cambiar el color.
+        const brush_color = document.querySelector('#brush_color'); //Input de color para cambiar el color del trazo.
+
+        const fill_color = document.querySelector('#fill_color'); //Input de color para cambiar color del relleno
 
         let isMousePressed = false; //Determinar si está presionando el ratón.
 
@@ -182,6 +187,7 @@
                     shapeStart = true;
                     ctx.beginPath();
                     ctx.moveTo(coords.x,coords.y);
+                    showRef(event);
                 }else{
                     ctx.lineTo(coords.x,coords.y);
                     ctx.stroke();
@@ -190,19 +196,23 @@
             }
             //Dibujar cuadrado
             if(toolType == 'square'){
+                //<div class="absolute w-4 h-4 border-2 border-blue-600/50 bg-blue-300/50 rounded-full"></div>
                 ctx.strokeStyle = strokeCurrentColor;
                 if(!shapeStart){
                     shapeStart = true;
                     getPosition(event);
                     square.x = coords.x;
                     square.y = coords.y;
+                    showRef(event);
                 }else{
                     getPosition(event);
                     square.height = coords.y - square.y;
                     square.width = coords.x - square.x;
+                    ctx.fillRect(square.x, square.y, square.width, square.height);
                     ctx.strokeRect(square.x, square.y, square.width, square.height);
                     square.x = square.y = square.width = square.height = undefined;
                     shapeStart = false;
+                    removeRef();
                 }
             }
             //Dibujar un círculo
@@ -215,13 +225,16 @@
                     ctx.beginPath();
                     circle.x = coords.x;
                     circle.y = coords.y;
+                    showRef(event);
                 }else{
                     getPosition(event);
                     let clockWise = coords.x >= circle.x;
                     ctx.arc(circle.x,circle.y,Math.abs(coords.x - circle.x),0, Math.PI * 2,clockWise);
+                    ctx.fill();
                     ctx.stroke();
                     circle.x = circle.y = undefined;
                     shapeStart = false;
+                    removeRef();
                 }
             }
             //Cuentagotas
@@ -232,6 +245,20 @@
             }
         }
 
+        /*
+        Muestra la referencia del último punto
+        */
+
+        function showRef(event){
+            var ref = document.createElement('div');
+            ref.setAttribute('id','ref');
+            ref.setAttribute('class','absolute w-4 h-4 border-2 border-blue-600/50 bg-blue-300/50 rounded-full');
+            ref.style.left = event.pageX + 'px';
+            ref.style.top = event.pageY + 'px';
+            document.body.appendChild(ref);
+        }
+
+        removeRef = () =>{document.querySelector('#ref').remove();};
 
         /*
         Limpia el Canvas
@@ -272,7 +299,13 @@
             brush_color.addEventListener('change',function(){
                     strokeCurrentColor = this.value;
                     ctx.strokeStyle = strokeCurrentColor;
-                    document.querySelector('#curr_color').style.backgroundColor = strokeCurrentColor;
+                    document.querySelector('#curr_stroke_color').style.backgroundColor = strokeCurrentColor;
+            });
+
+            fill_color.addEventListener('change',function(){
+                fillCurrentColor = this.value;
+                ctx.fillStyle = fillCurrentColor;
+                document.querySelector('#curr_fill_color').style.backgroundColor = fillCurrentColor;
             });
 
             /*
@@ -290,5 +323,21 @@
             });
         });
     </script>
+
+    <!-- FOOTER DE LA PÁGINA -->
+        <footer class="text-center pl-4 pt-4 pr-4 pb-2  bg-rose-300">
+
+            <div class="border-2 border-white m-auto w-3/4 lg:w-1/2 mt-8 mb-8"></div>
+                <section class="flex flex-col md:flex-row justify-center gap-8">
+                    <p class="text-4xl font-extrabold text-rose-600">Canvas Web App</p>
+
+                    <ol class="flex flex-col items-center md:items-start gap-2">
+                        <li><p class="text-2xl font-extrabold text-rose-500 border-b-2 border-white/50">Contactos</p></li>
+                        <li class=""><a class="text-rose-100 font-bold" href="https://github.com/JuanIgnaso">GitHub</a></li>
+                        <li class=""> <a class="text-rose-100 font-bold" href="https://www.linkedin.com/in/juan-ignacio-navarrete-soli%C3%B1o-935308282/">Linkedin</a></li>
+                    </ol>
+                </section>
+                <span class="mt-2 block text-sm text-center text-rose-100 sm:text-right">© 2024 <strong class="hover:underline">Juan Navarrete</strong></span>
+        </footer>
 </body>
 </html>
