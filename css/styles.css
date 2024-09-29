@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Patrick+Hand&family=Playpen+Sans:wght@100..800&display=swap');
+
+/* Fuente primaria 'Patric Hand', secundaria 'Playpen Sans' */
+/* Cabeceras 'Amtic SC' */
+
+body{
+    background-image:url('../img/white-wall.jpg');
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
+}
+
+body *{
+    box-sizing: border-box;
+    margin:0px;
+    font-family: "Patrick Hand","Playpen Sans", cursive;
+}
+
+article{
+    padding: 0.5%;
+    border: 2px solid rgba(218, 165, 32,0.5);
+    border-radius: 6px;
+}
+
+ol,ul{
+    list-style: none;
+    padding:0;
+}
+
+h1,h2,h3,h4,label{
+    font-family: "Amatic SC", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.tituloPagina{
+    text-align: center;
+}
+
+h1{
+    font-size: 3.5em;
+}
+
+h2{
+    font-size: 2.5em;
+}
+
+h3{
+    font-size: 1.5em;
+}
+
+#menuUsuario{
+    background-color: white;
+    color:crimson;
+    position: fixed;
+    width: 12%;
+    background-image: url('../img/paper_texture.jpg');
+    background-repeat: no-repeat;
+    box-shadow: 0px 0px 6px 2px rgb(0,0,0);
+    padding:0.5em;
+    z-index: 20;
+}
+
+
+#menuUsuario h3{
+    text-decoration: underline;
+}
+
+#menuUsuario a{
+    text-decoration: none;
+    color:#000;
+}
+
+#mobileMenu{
+    display: none;
+}
+
+.mostrar{
+    display: block !important;
+}
+
+#menuUsuario i{
+    display: none;
+}
+
+#abrirMenu{
+    background-color:unset;
+    border:unset;
+}
+
+#abrirMenu i{
+    display: inline;
+}
+
+#menuUsuario a:hover + i{
+    display: inline;
+}
+
+#main_container{
+    width: 70%;
+    margin: auto;
+    background-image:url('../img/wood_planks.jpg');
+    /* background-attachment: fixed; */
+    padding: 2em;
+}
+
+#container_inner{
+    width: 100%;
+    margin:auto;
+    padding: 2em;
+    background-image: url('../img/cork_board.jpg');
+    box-shadow: inset black 0px 0px 60px -12px;
+    /* background-repeat: no-repeat; */
+    /* background-attachment: fixed; */
+}
+
+#container_inner header{
+    text-align: center;
+    margin-bottom: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:1em;
+    margin-bottom: 3em;
+}
+
+#estados{
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap:1em;
+    justify-content: center;
+}
+
+.pin{
+  position: absolute;
+  top: 0%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  color:crimson;
+  font-size: clamp(1em,2vw,1.25em);
+  transition: 0.25s;
+}
+
+#estados li span:hover{
+    cursor:pointer;
+    box-shadow: 0px 0px 5px 2px rgb(0,0,0);
+}
+
+#estados li span:hover > .pin{
+    top:-15%;
+}
+
+select{
+    background-color: unset;
+    border: unset;
+    font-weight: 700;
+}
+
+option{
+    font-family: "Patrick Hand","Playpen Sans", cursive;
+}
+
+#estados li span{
+    padding:0.55em;
+    position: relative;
+}
+
+#notes_container{
+    display:grid;
+    grid-template-columns: repeat(4,1fr);
+    column-gap:1em;
+    row-gap:2.5em;
+}
+
+#desktop{
+    display:block;
+}
+
+#phone{
+    display: none;
+}
+
+@media screen and (max-width: 1500px) {
+    #main_container{
+        width: 85%;
+    }
+
+    #notes_container{
+        grid-template-columns: repeat(3,1fr);
+    }
+}
+
+@media screen and (max-width: 1000px) {
+
+    #main_container{
+        width: 90%;
+    }
+
+    #notes_container{
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    #desktop{
+        display: none;
+    }
+
+    #phone{
+        display: block;
+    }
+
+
+    #menuUsuario{
+        top:0;
+        margin-top: 0.5em;
+        width: auto;
+    }
+}
+
+@media screen and (max-width: 500px) {
+
+    #main_container{
+        width: 100%;
+    }
+
+    #notes_container{
+        grid-template-columns: repeat(1,1fr);
+    }
+}
+
+
+
+.note{
+    aspect-ratio: 1/1;
+    position:relative;
+    background:#fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 0.75em;
+    border: 2px solid rgba(177, 177, 177, 1);
+    transition: 0.5s;
+}
+
+.note:hover{
+    transform: scale(1.05);
+}
+
+
+.actions{
+    position: absolute;
+    bottom: 0px;
+    padding: 0.75em;
+    right: 0px;
+    font-size: 1.1em;
+}
+
+.note .actions ol{
+    justify-content: end;
+    display: flex;
+    align-items: center;
+    margin:0;
+    gap: 1em;
+}
+
+.noteContent{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    font-size: clamp(0.85em,2vw,1em);
+}
+
+.tape{
+    background-color: rgb(173, 216, 230);
+    border: 2px solid rgb(149, 149, 255);
+    width: 30%;
+    aspect-ratio: 2/1;
+    position: absolute;
+    border-radius: 0 0 6px 6px;
+    top:0%;
+    right:50%;
+    transform: translate(50%,-50%);
+}
+
+.tape_shade{
+    background:linear-gradient(rgb(82, 189, 255),rgb(173, 216, 230));
+    height: 30%;
+}
+
+.paused{
+    background:lightgray;
+    border:gray 2px solid;
+}
+
+.in_progress{
+    background:lightyellow;
+    border:goldenrod 2px solid;
+}
+
+.finished{
+    background:lightgreen;
+    border:green 2px solid;
+}
+
+.no_started{
+    background:#fff;
+    border: 2px solid rgba(177, 177, 177, 1);
+}
+

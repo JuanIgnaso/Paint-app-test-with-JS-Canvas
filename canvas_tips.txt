@@ -1,0 +1,34 @@
+///-----CANVAS------///
+
+>>Modificar estilos<<
+-strokeStyle - cambiar color de línea.
+-fillStyle - cambiar color del relleno.
+-lineWidth - ancho de línea.
+-lineCap - Tipo de borde de la línea.
+
+>>Métodos de trazado<<
+-beginPath()
+-moveTo(x,y) - Mover el puntero a sitio específico.
+-lineTo(x,y) - Traza una línea a el punto especificado.
+-arc(x,y,diametro,0, Math.PI * 2,true) - Traza un círculo.
+-fillRect(x,y,width,height) - Traza un cuadrado o rectángulo.
+-strokeRect - usa los mismos parámetros que fillRect, crea un rectángulo o cuadrado pero sin relleno.
+-closePath() -
+-rect(x,y,w,h) crea un rectángulo en la posición indicada dentro del canvas
+
+>>Como dibujar un Path<<
+1-Empezar el trazado(beginPath).
+2-Mover hacia una dirección o llamar a métodos del trazado a realizar.
+3-Cerrar la línea o trazado.
+
+        // //función que cuando mantengas el click empiece a pintar
+        // function startDrawing(event1){
+        //     isMousePressed = true;
+        //     // if(toolType == 'color_picker'){
+        //     //     let color = ctx.getImageData(coords.x,coords.y,1,1).data;
+        //     //     strokeCurrentColor = `rgb(${color[0]},${color[1]},${color[2]})`;
+        //     //     ctx.strokeStyle = strokeCurrentColor;
+        //     // }
+        //     getPosition(event1);
+
+        // }

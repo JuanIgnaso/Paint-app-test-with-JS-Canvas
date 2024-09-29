@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/output.css">
+    <title>Save Canvas 💾</title>
+</head>
+<body class="bg-rose-100">
+    <h1 class="p-2 pb-4 text-center text-orange-400">Here is your drawing!</h1>
+    <figure>
+        <img id="user_last_drawing" src="" alt="your drawing" class="border-8 border-red-400 rounded-md">
+        <figcaption class="text-center">Right click on the image to download</figcaption>
+      </figure>
+
+      <div class="flex justify-center p-2 pt-4">
+        <button class="p-2 m-auto font-bold text-red-600 border-4 border-red-400 rounded-lg hover:border-red-600 bg-rose-200"><a href="./canvas.html">Return to the Canvas</a></button>
+      </div>
+
+    <script>
+        console.log('página ha sido cargada con éxito!');
+        let user_drawing = document.querySelector('#user_last_drawing');
+
+        window.addEventListener('load',function(){
+
+            let drawing = localStorage.getItem('lastDrawing');
+
+            if(drawing != null){
+                user_drawing.setAttribute('src',drawing);
+            }
+        });
+    </script>
+</body>

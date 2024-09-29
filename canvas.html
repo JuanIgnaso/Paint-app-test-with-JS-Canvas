@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/output.css">
+    <title>Canvas 🖌️</title>
+</head>
+<body class="bg-rose-100">
+    <h1 class="p-2 text-center text-orange-400">🖌️ Canvas 🎨</h1>
+
+    <main  class="flex flex-col justify-center">
+
+        <!-- Borrar o descargar canvas -->
+        <div class="flex flex-col items-center gap-3 p-2">
+            <div class="flex gap-2">
+                <!-- <button id="undo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">⬅️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo</span></button>
+                <button id="redo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">➡️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Redo</span></button> -->
+                <button id="clear_canvas" class="self-end p-2 font-bold text-red-600 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 bg-rose-200">Clear Canvas</button>
+                <button onclick="saveDrawing()" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">💾<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Download drawing</span></button>
+            </div>
+        </div>
+
+        <!-- tamaño por defecto del canvas es de 300 x 150 -->
+        <canvas  class="bg-white border-8 border-red-400 rounded-md " height="800px" width="1000px" id="myCanvas"></canvas>
+        <div class="grid justify-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+
+            <!-- Grosor del pincel -->
+            <div class="flex flex-col items-center gap-3 p-2">
+                <h4 class="text-orange-400">Line thickness</h4>
+                <select name="" id="brush_thickness"  class="p-2 font-bold border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 bg-rose-200 text-rose-600 hover:border-red-600">
+                    <option value="1">Extra thin</option>
+                    <option value="2">Thin</option>
+                    <option value="4">Medium</option>
+                    <option value="8">Thick</option>
+                    <option value="16">Extra thick</option>
+                </select>
+            </div>
+
+            <!-- Herramientas -->
+            <div class="flex flex-col items-center gap-3 p-2">
+                <h4 class="text-orange-400">Tools</h4>
+                <div class="grid grid-cols-4 gap-2 justify-items-center lg:grid-cols-7 xl:grid-cols-9">
+                    <button id="pencil" class="canvas-button bg-rose-200 tool group">🖌️<span class="tool-name">Paint</span></button>
+                    <button id="color_picker" class="canvas-button bg-rose-200 tool group">🩸<span class="tool-name">Color Picker</span></button>
+                    <button id="square" class="canvas-button tool group bg-rose-200">⏹️<span class="tool-name">Draw square</span></button>
+                    <button id="circle" class="canvas-button tool group bg-rose-200">⭕<span class="tool-name">Draw circle</span></button>
+                    <button id="line" class="canvas-button tool group bg-rose-200">➖<span class="tool-name">Draw Line</span></button>
+                    <button id="eraser" class="canvas-button tool group bg-rose-200">💊<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Eraser</span></button>
+                    <button class="canvas-button group bg-rose-200">🎨<input class="absolute opacity-0" type="color" name="" id="brush_color"><span class="tool-name">Color picker</span></button>
+                    <button class="canvas-button group bg-rose-200">🪣<span class="tool-name">Color Bucket</span></button>
+                </div>
+            </div>
+
+            <!-- Color actual -->
+            <div class="flex flex-col items-center gap-3 p-2">
+                <h4 class="text-orange-400">Current Color</h4>
+                <div class="flex justify-center gap-3">
+                    <div class="flex justify-center gap-2">
+                        <span class="self-center font-bold text-red-600">Line color</span><div id="curr_color" class="relative flex justify-center w-12 p-2 bg-black border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"></div>
+                    </div>
+                    <div class="flex justify-center gap-2"></div>
+                        <span class="self-center font-bold text-red-600">Fill color</span><div id="curr_fill_color" class="relative flex justify-center w-12 p-2 bg-white border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- SCRIPT -->
+    <script>
+        /*
+        getBoundingClientRect() <- buscar en documentación, devuelve características de elemento dom: x,y,top,bottom,left,right,height,width.
+        */
+
+        /*VARIABLES Y CONSTANTES**********************************************************************************/
+
+        const canvas = document.getElementById("myCanvas");
+
+        let ctx = canvas.getContext("2d"); //dar contexto, en este caso dibujo 2D.
+
+        let strokeCurrentColor = '#000000'; //Guarda el color actual
+
+        let currentFillColor = '#ffffff'; //Guarda el color de relleno actual
+
+        ctx.strokeStyle = strokeCurrentColor; //Color por defecto del pincel.
+
+        ctx.lineWidth = 4; //Grosor por defecto del pincel.
+
+        const brush_color = document.querySelector('#brush_color'); //Input de color para cambiar el color.
+
+        let isMousePressed = false; //Determinar si está presionando el ratón.
+
+        let coords = {x:0,y:0}; //Coordenandas del ratón
+
+        let toolType;
+
+        let shapeStart = false;
+
+        let square = {'x':undefined,'y':undefined,'width':undefined,'height':undefined};
+        //arc(x,y,diametro,0, Math.PI * 2,true)
+        let circle = {'x':undefined,'y':undefined};
+
+        /************************************************************************************************/
+
+
+        //FUNCIONES----------------------------------------------------------------------------------
+
+        /*
+        Cambia el tamaño canvas cuando se redimensiona la ventana
+        */
+        function resize(){
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+        }
+
+        /*
+        Recoge y actualiza la posición del ratón del usuario.
+        */
+        function getPosition(event){
+            /*evitar que desincronice la posición del pincel al hacer scroll*/
+            coords.x = (event.clientX - canvas.getBoundingClientRect().left) / canvas.getBoundingClientRect().width * canvas.getBoundingClientRect().width;
+            coords.y = (event.clientY - canvas.getBoundingClientRect().top) / canvas.getBoundingClientRect().height * canvas.getBoundingClientRect().height;
+        }
+
+
+        /*Cambiar grosor del pincel*/
+        document.querySelector('#brush_thickness').addEventListener('change',function(){
+            ctx.lineWidth = Number(this.value);
+        });
+
+
+       /*
+       Convertir el canvas en imagen para que el usuario la pueda descargar como imágen.
+       */
+       function saveDrawing(){
+            var img = canvas.toDataURL('image/png');
+            localStorage.setItem('lastDrawing',img);
+            window.open('./saveCanvas.html','_self'); //redirige el usuario a saveCanvas.html
+       }
+
+        /*
+        Evalúa el estado 'isMousePressed' y dibuja llamando a la función drawPath si 'pencil' o 'eraser'
+        están seleccionados.
+        */
+        function draw(event) {
+            //Dibuja en caso de que el ratón esté siendo presionado.
+            if(isMousePressed){
+                ctx.lineCap = 'round';
+                /*Si el usuario está usando la goma de borrar, se cambia el pincel al color blanco*/
+
+                if(toolType == 'eraser'){
+                    ctx.strokeStyle = '#ffffff';
+                    drawPath(event);
+                }
+
+                if(toolType == 'pencil'){
+                    ctx.strokeStyle = strokeCurrentColor;
+                    drawPath(event);
+                }
+            }
+        }
+
+        /*Dibuja el trazado en el canvas*/
+        function drawPath(event){
+            ctx.beginPath();
+            ctx.moveTo(coords.x,coords.y);
+            getPosition(event);
+            ctx.lineTo(coords.x,coords.y);
+            ctx.stroke();
+        }
+
+        /*
+        Cambia la forma con la cual se interactua con el canvas dependiendo del valor que tenga la variable
+        'toolType'
+        */
+        function useTool(event){
+            //Dibujar línea
+            if(toolType == 'line'){
+                ctx.strokeStyle = strokeCurrentColor;
+                getPosition(event);
+                if(!shapeStart){
+                    shapeStart = true;
+                    ctx.beginPath();
+                    ctx.moveTo(coords.x,coords.y);
+                }else{
+                    ctx.lineTo(coords.x,coords.y);
+                    ctx.stroke();
+                    shapeStart = false;
+                }
+            }
+            //Dibujar cuadrado
+            if(toolType == 'square'){
+                ctx.strokeStyle = strokeCurrentColor;
+                if(!shapeStart){
+                    shapeStart = true;
+                    getPosition(event);
+                    square.x = coords.x;
+                    square.y = coords.y;
+                }else{
+                    getPosition(event);
+                    square.height = coords.y - square.y;
+                    square.width = coords.x - square.x;
+                    ctx.strokeRect(square.x, square.y, square.width, square.height);
+                    square.x = square.y = square.width = square.height = undefined;
+                    shapeStart = false;
+                }
+            }
+            //Dibujar un círculo
+            if(toolType == 'circle'){
+                console.log(toolType);
+                ctx.strokeStyle = strokeCurrentColor;
+                getPosition(event);
+                if(!shapeStart){
+                    shapeStart = true;
+                    ctx.beginPath();
+                    circle.x = coords.x;
+                    circle.y = coords.y;
+                }else{
+                    getPosition(event);
+                    let clockWise = coords.x >= circle.x;
+                    ctx.arc(circle.x,circle.y,Math.abs(coords.x - circle.x),0, Math.PI * 2,clockWise);
+                    ctx.stroke();
+                    circle.x = circle.y = undefined;
+                    shapeStart = false;
+                }
+            }
+            //Cuentagotas
+            if(toolType == 'color_picker'){
+                let color = ctx.getImageData(coords.x,coords.y,1,1).data;
+                strokeCurrentColor = `rgb(${color[0]},${color[1]},${color[2]})`;
+                ctx.strokeStyle = strokeCurrentColor;
+            }
+        }
+
+
+        /*
+        Limpia el Canvas
+        */
+        function clearCanvas(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.rect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+        }
+
+
+        /*EVENTLISTENERS**********************************************************************************/
+        /*
+        Se cargan los siguientes eventlisteners al cargar la página
+        */
+        window.addEventListener('load',()=>{
+
+            resize();
+
+            /*Define el color de fondo del canvas y evita que quede transparente*/
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ffffff";
+            ctx.fill();
+            toolType = 'pencil';
+
+            document.querySelector('#clear_canvas').addEventListener('click',clearCanvas); //Limpiar el canvas
+
+            canvas.addEventListener('mousedown',(e)=> {isMousePressed = true; getPosition(e)});
+
+            document.addEventListener("mousemove", draw);
+
+            document.addEventListener('mouseup',() => { isMousePressed = false;});
+
+            canvas.addEventListener('click',(e)=>useTool(e));
+
+            /*Muestra al usuario el color actual del pincel*/
+            brush_color.addEventListener('change',function(){
+                    strokeCurrentColor = this.value;
+                    ctx.strokeStyle = strokeCurrentColor;
+                    document.querySelector('#curr_color').style.backgroundColor = strokeCurrentColor;
+            });
+
+            /*
+            Añadir evento a las herramientas para cambiar el 'toolType' actual
+            */
+            document.querySelectorAll(".tool").forEach(element => {
+                element.addEventListener("click", function(e){
+                    toolType = e.target.closest(".tool").id;
+                    document.querySelectorAll('.tool').forEach(e =>{
+                        e.classList.replace('bg-rose-400','bg-rose-200');
+                    }
+                    );
+                    element.classList.replace('bg-rose-200','bg-rose-400');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

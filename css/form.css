@@ -1,0 +1,108 @@
+.formGroup{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:0.15em;
+    margin-bottom: 1em;
+}
+
+.formGroup label{
+    font-size: 1.1em;
+}
+
+.input_error{
+    color:red;
+    font-size: 0.9em;
+}
+
+input:not([type="submit"]){
+    font-size: 1em;
+    padding: 0.25em;
+    background-color: unset;
+    border: unset;
+    border-bottom: 2px solid rgb(145, 175, 233);
+    text-align: center;
+    outline: none;
+}
+
+.pen{
+    position: absolute;
+    display: none !important;
+    /* translate(x,y) */
+    transform: translate(0,50%);
+}
+
+
+input:not([type="submit"]):focus,input:not([type="submit"]):hover{
+    border-bottom: 2px solid cornflowerblue;
+    }
+
+input:not([type="submit"]):focus + .pen,input:not([type="submit"]):hover  + .pen{
+display: inline !important;
+}
+
+input[type="submit"]{
+    border-radius: 100% 0% 100% 0% / 3% 92% 8% 97% ;
+    border:unset;
+    background:linear-gradient(to right,rgba(254, 241, 2,1) 90%,rgba(254, 241, 2,0) );
+    font-size: 1em;
+    margin:auto;
+}
+
+.input_group{
+    position: relative;
+}
+
+
+
+.main-login-register{
+    background-image:url('../img/wood_planks.jpg');
+    margin:auto;
+    width: auto;
+    width: 35%;
+    padding: 2em;
+}
+
+.main-login-register-inner{
+    width: 100%;
+    margin:auto;
+    padding: 2em;
+    background-image: url('../img/cork_board.jpg');
+    box-shadow: inset black 0px 0px 60px -12px; 
+}
+
+.loginRegister-form{
+    background-image: url('../img/paper_texture.jpg');
+    padding:2em;
+    position: relative;
+    width: 70%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-pin{
+    position: absolute;
+    top:0;
+    left:50%;
+    transform: translate(-50%,-15%);
+    color:darkgreen;
+    font-size: 2em;
+}
+
+@media screen and (max-width: 1000px){
+    .main-login-register{
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 600px){
+    .main-login-register{
+        width: 90%;
+    }
+
+    .loginRegister-form{
+        width: 95%;
+    }
+}
