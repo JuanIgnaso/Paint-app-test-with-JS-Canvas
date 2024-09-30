@@ -29,7 +29,7 @@
 
 @layer components{
     .canvas-button{
-        @apply relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 aspect-square;
+        @apply relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner cursor-auto shadow-black/50 hover:border-red-600 aspect-square;
     }
 
     .tool-name{

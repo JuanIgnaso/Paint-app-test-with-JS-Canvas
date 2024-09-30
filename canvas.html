@@ -43,17 +43,17 @@
             <div class="flex flex-col items-center gap-3 p-2">
                 <h4 class="text-orange-400">Tools</h4>
                 <div class="grid grid-cols-4 gap-2 justify-items-center lg:grid-cols-7 xl:grid-cols-8">
-                    <button id="pencil" class="canvas-button bg-rose-200 tool group">🖌️<span class="tool-name">Paint</span></button>
-                    <button id="color_picker" class="canvas-button bg-rose-200 tool group">🩸<span class="tool-name">Color Picker</span></button>
-                    <button id="square" class="canvas-button tool group bg-rose-200">⏹️<span class="tool-name">Draw square</span></button>
-                    <button id="circle" onclick="console.log('hola')" class="canvas-button tool group bg-rose-200">⭕<span class="tool-name">Draw circle</span></button>
-                    <button id="line" class="canvas-button tool group bg-rose-200">➖<span class="tool-name">Draw Line</span></button>
-                    <button id="eraser" class="canvas-button tool group bg-rose-200">💊<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Eraser</span></button>
+                    <button id="pencil" class="canvas-button bg-rose-200 tool group has-[:checked]:bg-rose-400"><input type="radio" name="tool" id="pencil" class="absolute opacity-0 cursor-pointer">🖌️<span class="tool-name">Paint</span></button>
+                    <button id="color_picker" class="canvas-button bg-rose-200 tool group has-[:checked]:bg-rose-400">🩸<input type="radio" name="tool" id="color_picker" class="absolute opacity-0 cursor-pointer"><span class="tool-name">Color Picker</span></button>
+                    <button id="square" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">⏹️<input type="radio" name="tool" id="square" class="absolute opacity-0 cursor-pointer"><span class="tool-name">Draw square</span></button>
+                    <button id="circle" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">⭕<input type="radio" name="tool" id="circle" class="absolute opacity-0 cursor-pointer"><span class="tool-name">Draw circle</span></button>
+                    <button id="line" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">➖<input type="radio" name="tool" id="line" class="absolute opacity-0 cursor-pointer"><span class="tool-name">Draw Line</span></button>
+                    <button id="eraser" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">💊<input type="radio" name="tool" id="eraser" class="absolute opacity-0 cursor-pointer"><span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Eraser</span></button>
                     <button class="canvas-button group bg-rose-200">🪣<span class="tool-name">Color Bucket</span></button>
                 </div>
                 <div id="fill_figure_menu" class="hidden gap-3">
-                    <label for="" class="flex gap-2">Fill<input type="radio" name="fill" id="1"></label>
-                    <label for="" class="flex gap-2">No fill<input type="radio" name="fill" id="0"></label>
+                    <label for="" class="flex gap-2">Fill<input type="radio" name="fill" id="fillyes"></label>
+                    <label for="" class="flex gap-2">No fill<input type="radio" name="fill" id="fillno"></label>
                 </div>
             </div>
 
@@ -97,6 +97,8 @@
 
         const fill_color = document.querySelector('#fill_color'); //Input de color para cambiar color del relleno
 
+        const fill_menu = document.querySelector('#fill_figure_menu');
+
         let isMousePressed = false; //Determinar si está presionando el ratón.
 
         let coords = {x:0,y:0}; //Coordenandas del ratón
@@ -120,6 +122,17 @@
         function resize(){
         ctx.canvas.width = window.innerWidth;
         ctx.canvas.height = window.innerHeight;
+        }
+
+        /*Mostrar menú para seleccionar tipo de relleno*/
+        function selectFill(){
+            if(toolType == 'circle' || toolType == 'square'){
+                if(fill_menu.classList.contains('hidden')){
+                    fill_menu.classList.replace('hidden','flex');
+                }
+            }else{
+                fill_menu.classList.replace('flex','hidden');
+            }
         }
 
         /*
@@ -197,11 +210,12 @@
                     ctx.stroke();
                     ctx.save();
                     shapeStart = false;
+                    removeRef();
                 }
             }
             //Dibujar cuadrado
             if(toolType == 'square'){
-                //<div class="absolute w-4 h-4 border-2 border-blue-600/50 bg-blue-300/50 rounded-full"></div>
+                //<div class="absolute w-4 h-4 border-2 rounded-full border-blue-600/50 bg-blue-300/50"></div>
                 ctx.strokeStyle = strokeCurrentColor;
                 if(!shapeStart){
                     shapeStart = true;
@@ -213,7 +227,11 @@
                     getPosition(event);
                     square.height = coords.y - square.y;
                     square.width = coords.x - square.x;
+
+                    if(document.querySelector('#fillyes').checked){
                     ctx.fillRect(square.x, square.y, square.width, square.height);
+                    }
+
                     ctx.strokeRect(square.x, square.y, square.width, square.height);
                     square.x = square.y = square.width = square.height = undefined;
                     shapeStart = false;
@@ -236,7 +254,11 @@
                     getPosition(event);
                     let clockWise = coords.x >= circle.x;
                     ctx.arc(circle.x,circle.y,Math.abs(coords.x - circle.x),0, Math.PI * 2,clockWise);
+
+                    if(document.querySelector('#fillyes').checked){
                     ctx.fill();
+                    }
+
                     ctx.stroke();
                     circle.x = circle.y = undefined;
                     shapeStart = false;
@@ -289,6 +311,7 @@
             ctx.rect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#ffffff";
             ctx.fill();
+
             toolType = 'pencil';
 
             document.querySelector('#clear_canvas').addEventListener('click',clearCanvas); //Limpiar el canvas
@@ -317,33 +340,33 @@
             /*
             Añadir evento a las herramientas para cambiar el 'toolType' actual
             */
-            document.querySelectorAll(".tool").forEach(element => {
+            document.querySelectorAll("input[name='tool']").forEach(element => {
+                if(element.checked){
+                        toolType = element.getAttribute('id');
+                }
                 element.addEventListener("click", function(e){
-                    toolType = e.target.closest(".tool").id;
-                    document.querySelectorAll('.tool').forEach(e =>{
-                        e.classList.replace('bg-rose-400','bg-rose-200');
-                    }
-                    );
-                    element.classList.replace('bg-rose-200','bg-rose-400');
+                    toolType = e.target.id;
+                    selectFill();
+
                 });
             });
         });
     </script>
 
     <!-- FOOTER DE LA PÁGINA -->
-        <footer class="text-center pl-4 pt-4 pr-4 pb-2  bg-rose-300">
+        <footer class="pt-4 pb-2 pl-4 pr-4 text-center bg-rose-300">
 
-            <div class="border-2 border-white m-auto w-3/4 lg:w-1/2 mt-8 mb-8"></div>
-                <section class="flex flex-col md:flex-row justify-center gap-8">
+            <div class="w-3/4 m-auto mt-8 mb-8 border-2 border-white lg:w-1/2"></div>
+                <section class="flex flex-col justify-center gap-8 md:flex-row">
                     <p class="text-4xl font-extrabold text-rose-600">Canvas Web App</p>
 
-                    <ol class="flex flex-col items-center md:items-start gap-2">
-                        <li><p class="text-2xl font-extrabold text-rose-500 border-b-2 border-white/50">Contactos</p></li>
-                        <li class=""><a class="text-rose-100 font-bold" href="https://github.com/JuanIgnaso">GitHub</a></li>
-                        <li class=""> <a class="text-rose-100 font-bold" href="https://www.linkedin.com/in/juan-ignacio-navarrete-soli%C3%B1o-935308282/">Linkedin</a></li>
+                    <ol class="flex flex-col items-center gap-2 md:items-start">
+                        <li><p class="text-2xl font-extrabold border-b-2 text-rose-500 border-white/50">Contactos</p></li>
+                        <li class=""><a class="font-bold text-rose-100" href="https://github.com/JuanIgnaso">GitHub</a></li>
+                        <li class=""> <a class="font-bold text-rose-100" href="https://www.linkedin.com/in/juan-ignacio-navarrete-soli%C3%B1o-935308282/">Linkedin</a></li>
                     </ol>
                 </section>
-                <span class="mt-2 block text-sm text-center text-rose-100 sm:text-right">© 2024 <strong class="hover:underline">Juan Navarrete</strong></span>
+                <span class="block mt-2 text-sm text-center text-rose-100 sm:text-right">© 2024 <strong class="hover:underline">Juan Navarrete</strong></span>
         </footer>
 </body>
 </html>
