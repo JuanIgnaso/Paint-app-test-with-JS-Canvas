@@ -24,7 +24,7 @@
         </div>
 
         <!-- tamaño por defecto del canvas es de 300 x 150 -->
-        <canvas  class="bg-white border-8 border-red-400 rounded-md " height="800px" width="1000px" id="myCanvas"></canvas>
+        <canvas  class="bg-white border-8 border-red-400 rounded-md " height="800px" width="1000px" id="mainCanvas"></canvas>
         <div class="grid justify-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
 
             <!-- Grosor del pincel -->
@@ -81,7 +81,7 @@
 
         /*VARIABLES Y CONSTANTES**********************************************************************************/
 
-        const canvas = document.getElementById("myCanvas");
+        const canvas = document.getElementById("mainCanvas");
 
         let ctx = canvas.getContext("2d"); //dar contexto, en este caso dibujo 2D.
 

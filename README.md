@@ -16,3 +16,7 @@ Por el momento en la Aplicación Web se puede realizar:
 <li>Trazar cuadrados</li>
 <li>Guardar canvas en una imágen</li>
 </ul>
+
+## Ideas a añadir
+
+Se plantea añadir posibilidad de múltiples capas; posible solución, crear uno principal y luego juntar todos en él y pasar a toDataURL
