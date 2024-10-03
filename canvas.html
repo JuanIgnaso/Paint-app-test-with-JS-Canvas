@@ -16,27 +16,23 @@
         <!-- Borrar o descargar canvas -->
         <div class="flex flex-col items-center gap-3 p-2">
             <div class="flex gap-2">
-                <!-- <button id="undo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">⬅️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo</span></button>
-                <button id="redo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">➡️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Redo</span></button> -->
+                <button id="undo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">⬅️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo</span></button>
                 <button id="clear_canvas" class="self-end p-2 font-bold text-red-600 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 bg-rose-200">Clear Canvas</button>
                 <button onclick="saveDrawing()" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">💾<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Download drawing</span></button>
             </div>
         </div>
 
         <!-- tamaño por defecto del canvas es de 300 x 150 -->
-        <canvas  class="bg-white border-8 border-red-400 rounded-md " height="800px" width="1000px" id="mainCanvas"></canvas>
+         <div id="m" class="relative border-8 border-red-400 rounded-md">
+            <canvas class="relative w-full h-full bg-white" id="mainCanvas"></canvas>
+         </div>
         <div class="grid justify-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
 
             <!-- Grosor del pincel -->
             <div class="flex flex-col items-center gap-3 p-2">
                 <h4 class="text-orange-400">Line thickness</h4>
-                <select name="" id="brush_thickness"  class="p-2 font-bold border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 bg-rose-200 text-rose-600 hover:border-red-600">
-                    <option value="1">Extra thin</option>
-                    <option value="2">Thin</option>
-                    <option value="4">Medium</option>
-                    <option value="8">Thick</option>
-                    <option value="16">Extra thick</option>
-                </select>
+                <label for="">Custom thikness<input type="range" name="" id="brush_thickess" min="1" max="100" ></label>
+
             </div>
 
             <!-- Herramientas -->
@@ -81,6 +77,10 @@
 
         /*VARIABLES Y CONSTANTES**********************************************************************************/
 
+        //let canvasList = document.querySelectorAll('#m canvas') <- layers
+
+        //ctx = canvasList[3].getContext('2D');
+
         const canvas = document.getElementById("mainCanvas");
 
         let ctx = canvas.getContext("2d"); //dar contexto, en este caso dibujo 2D.
@@ -114,14 +114,20 @@
         /************************************************************************************************/
 
 
+
+
         //FUNCIONES----------------------------------------------------------------------------------
 
         /*
         Cambia el tamaño canvas cuando se redimensiona la ventana
         */
         function resize(){
-        ctx.canvas.width = window.innerWidth;
         ctx.canvas.height = window.innerHeight;
+        ctx.canvas.width = window.innerWidth;
+
+        let m = document.querySelector('#m');
+        m.style.height = ctx.canvas.height;
+        m.style.width = ctx.canvas.width;
         }
 
         /*Mostrar menú para seleccionar tipo de relleno*/
@@ -144,12 +150,10 @@
             coords.y = (event.clientY - canvas.getBoundingClientRect().top) / canvas.getBoundingClientRect().height * canvas.getBoundingClientRect().height;
         }
 
-
         /*Cambiar grosor del pincel*/
-        document.querySelector('#brush_thickness').addEventListener('change',function(){
+        document.querySelector('#brush_thickess').addEventListener('change',function(){
             ctx.lineWidth = Number(this.value);
         });
-
 
        /*
        Convertir el canvas en imagen para que el usuario la pueda descargar como imágen.
@@ -208,7 +212,6 @@
                 }else{
                     ctx.lineTo(coords.x,coords.y);
                     ctx.stroke();
-                    ctx.save();
                     shapeStart = false;
                     removeRef();
                 }
@@ -235,7 +238,6 @@
                     ctx.strokeRect(square.x, square.y, square.width, square.height);
                     square.x = square.y = square.width = square.height = undefined;
                     shapeStart = false;
-                    ctx.save();
                     removeRef();
                 }
             }

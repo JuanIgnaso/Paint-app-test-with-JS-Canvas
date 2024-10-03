@@ -32,3 +32,15 @@
         //     getPosition(event1);
 
         // }
+
+
+
+UNDO - REDO
+
+guardas el progreso o historial en dos arrays, Undo y Redo.
+
+cuando el usuario levanta el ratón, se guarda el último movimiento en el array de Undo[]
+
+SOLO afectuar las funciones de undo y redo si los arrays Undo y Redo tienen algún elemento dentro
+
+cuando el usuario le da a al botón de undo, sacas el último elemento de Undo y lo pones en redo[] por si el usuario quiere rehacer el último movimiento.

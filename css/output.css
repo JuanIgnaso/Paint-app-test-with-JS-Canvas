@@ -646,6 +646,10 @@ h6 {
   z-index: 10;
 }
 
+.z-20 {
+  z-index: 20;
+}
+
 .m-auto {
   margin: auto;
 }
@@ -686,6 +690,10 @@ h6 {
   height: 1rem;
 }
 
+.h-full {
+  height: 100%;
+}
+
 .w-12 {
   width: 3rem;
 }
@@ -696,6 +704,10 @@ h6 {
 
 .w-4 {
   width: 1rem;
+}
+
+.w-full {
+  width: 100%;
 }
 
 .cursor-pointer {
@@ -946,11 +958,6 @@ h6 {
 }
 
 .has-\[\:checked\]\:bg-rose-400:has(:checked) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(251 113 133 / var(--tw-bg-opacity));
-}
-
-.has-\[\:focus\]\:bg-rose-400:has(:focus) {
   --tw-bg-opacity: 1;
   background-color: rgb(251 113 133 / var(--tw-bg-opacity));
 }
