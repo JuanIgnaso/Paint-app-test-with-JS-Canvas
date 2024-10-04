@@ -16,8 +16,8 @@
         <!-- Borrar o descargar canvas -->
         <div class="flex flex-col items-center gap-3 p-2">
             <div class="flex gap-2">
-                <button id="undo_btn" onclick="undo()" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">⬅️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo</span></button>
-                <button id="redo_btn" onclick="redo()" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">➡️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Redo</span></button>
+                <button id="undo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">⬅️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo</span></button>
+                <button id="redo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">➡️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Redo</span></button>
                 <button id="clear_canvas" class="self-end p-2 font-bold text-red-600 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 bg-rose-200">Clear Canvas</button>
                 <button onclick="saveDrawing()" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">💾<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Download drawing</span></button>
             </div>
@@ -94,8 +94,6 @@
 
         const fill_menu = document.querySelector('#fill_figure_menu');
 
-        let undo_btn =document.querySelector('#undo_btn'); //Botón deshacer
-
         let isMousePressed = false; //Determinar si está presionando el ratón.
 
         let coords = {x:0,y:0}; //Coordenandas del ratón
@@ -104,11 +102,13 @@
 
         let shapeStart = false;
 
+        let undo_btn = document.querySelector('#undo_btn');
+
+        let redo_btn = document.querySelector('#redo_btn');
+
         let undo_array = [];
 
         let redo_array = [];
-
-        let index = -1; //Tiene -1 porque en un Array, posición 0 significa que tiene algo.
 
         let square = {'x':undefined,'y':undefined,'width':undefined,'height':undefined};
         //arc(x,y,diametro,0, Math.PI * 2,true)
@@ -300,25 +300,33 @@
             ctx.fillStyle = '#ffffff';
             ctx.fill();
             undo_array = redo_array = [];
-            index = -1;
         }
 
 
         function save_last(){
             undo_array.push(ctx.getImageData(0,0,canvas.width,canvas.height));
-            index++;
+            redo_array = [];
         }
 
-        function undo(){
-            if(undo_array.length > 0){
-                //deshacemos cambios
-                redo_array.push(undo_array.pop());
-                index-=1;
-                ctx.putImageData(undo_array[index],0,0);
-            }else{
-                clearCanvas();
-            }
+        function undoRedo(pushStack,popStack){
+                pushStack.push(popStack.pop());
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.putImageData(undo_array[undo_array.length - 1],0,0);
         }
+
+        undo_btn.addEventListener('click',function(){
+            if(undo_array.length > 1){
+                undoRedo(redo_array,undo_array);
+            }else{
+                ctx.clearRect(0,0,canvas.width,canvas.height);;
+            }
+        });
+
+        redo_btn.addEventListener('click',function(){
+            if(redo_array.length >= 1){
+                undoRedo(undo_array,redo_array);
+            }
+        });
 
         /*EVENTLISTENERS**********************************************************************************/
         /*
@@ -344,6 +352,7 @@
             canvas.addEventListener('mouseup',function(){
                 isMousePressed = false;
                 save_last();
+
             });
 
             canvas.addEventListener('click',(e)=>useTool(e));
