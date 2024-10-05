@@ -67,13 +67,9 @@
         </div>
     </main>
 
-
     <!-- SCRIPT -->
-    <script>
-        /*
-        getBoundingClientRect() <- buscar en documentación, devuelve características de elemento dom: x,y,top,bottom,left,right,height,width.
-        */
 
+    <script>
         /*VARIABLES Y CONSTANTES**********************************************************************************/
 
         const canvas = document.getElementById("mainCanvas");
@@ -100,10 +96,6 @@
 
         let shapeStart = false;
 
-        let undo_btn = document.querySelector('#undo_btn');
-
-        let redo_btn = document.querySelector('#redo_btn');
-
         let undo_array = [];
 
         let redo_array = [];
@@ -117,22 +109,13 @@
         //FUNCIONES----------------------------------------------------------------------------------
 
         /*
-        Cambia el tamaño canvas cuando se redimensiona la ventana
+        Cambia el tamaño canvas cuando se redimensiona la ventana //<- motivo del desincronizar al cambiar el tamaño de ventana es porque solo
+        se ejecuta cuando carga el documento(load)
         */
         function resize(){
         ctx.canvas.height = window.innerHeight;
-        ctx.canvas.width = window.innerWidth - 60;
-        }
-
-        /*Mostrar menú para seleccionar tipo de relleno*/
-        function selectFill(){
-            if(toolType == 'circle' || toolType == 'square'){
-                if(fill_menu.classList.contains('hidden')){
-                    fill_menu.classList.replace('hidden','flex');
-                }
-            }else{
-                fill_menu.classList.replace('flex','hidden');
-            }
+        ctx.canvas.width = window.innerWidth;
+        console.log(ctx.canvas.width);
         }
 
         /*
@@ -144,39 +127,25 @@
             coords.y = (event.clientY - canvas.getBoundingClientRect().top) / canvas.getBoundingClientRect().height * canvas.getBoundingClientRect().height;
         }
 
-        /*Cambiar grosor del pincel usando el input tipo rango*/
-        document.querySelector('#brush_thickess').addEventListener('change',function(){
-            ctx.lineWidth = Number(this.value);
-        });
-
        /*
        Convertir el canvas en imagen para que el usuario la pueda descargar como imágen.
        */
        function saveDrawing(){
-            var img = canvas.toDataURL('image/png');
-            localStorage.setItem('lastDrawing',img);
+            localStorage.setItem('lastDrawing',canvas.toDataURL('image/png'));
             window.open('./saveCanvas.html','_self'); //redirige el usuario a saveCanvas.html
        }
 
         /*
-        Evalúa el estado 'isMousePressed' y dibuja llamando a la función drawPath si 'pencil' o 'eraser'
-        están seleccionados.
+        Función encargada de realizar un trazado cuando el usuario mueve el ratón manteniendo presionado.
         */
         function draw(event) {
-            //Dibuja en caso de que el ratón esté siendo presionado.
             if(isMousePressed){
                 ctx.lineCap = 'round';
-                /*Si el usuario está usando la goma de borrar, se cambia el pincel al color blanco*/
-
-                if(toolType == 'eraser'){
-                    ctx.strokeStyle = '#ffffff';
+                if(toolType == 'eraser' || toolType == 'pencil'){
                     drawPath(event);
                 }
-
-                if(toolType == 'pencil'){
-                    ctx.strokeStyle = strokeCurrentColor;
-                    drawPath(event);
-                }
+                /*Si se usa la goma se cambia a color blanco, si no se vuelve al color actual*/
+                ctx.strokeStyle = toolType == 'eraser' ? '#ffffff' : strokeCurrentColor;
             }
         }
 
@@ -209,13 +178,11 @@
                     shapeStart = false;
                     save_last();
                     removeRef();
-
                 }
             }
             //Dibujar cuadrado
             if(toolType == 'square'){
                 //<div class="absolute w-4 h-4 border-2 rounded-full border-blue-600/50 bg-blue-300/50"></div>
-                ctx.strokeStyle = strokeCurrentColor;
                 if(!shapeStart){
                     shapeStart = true;
                     getPosition(event);
@@ -236,13 +203,11 @@
                     shapeStart = false;
                     save_last();
                     removeRef();
-
                 }
             }
             //Dibujar un círculo
             if(toolType == 'circle'){
                 console.log(toolType);
-                ctx.strokeStyle = strokeCurrentColor;
                 getPosition(event);
                 if(!shapeStart){
                     shapeStart = true;
@@ -300,31 +265,18 @@
             undo_array = redo_array = [];
         }
 
-
+        /*Guarda la última acción hecha por el usuario*/
         function save_last(){
             undo_array.push(ctx.getImageData(0,0,canvas.width,canvas.height));
             redo_array = [];
         }
 
+        /*Se encargar del historial del dibujo*/
         function undoRedo(pushStack,popStack){
                 pushStack.push(popStack.pop());
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 ctx.putImageData(undo_array[undo_array.length - 1],0,0);
         }
-
-        undo_btn.addEventListener('click',function(){
-            if(undo_array.length > 1){
-                undoRedo(redo_array,undo_array);
-            }else{
-                ctx.clearRect(0,0,canvas.width,canvas.height);;
-            }
-        });
-
-        redo_btn.addEventListener('click',function(){
-            if(redo_array.length >= 1){
-                undoRedo(undo_array,redo_array);
-            }
-        });
 
         /*EVENTLISTENERS**********************************************************************************/
         /*
@@ -350,24 +302,38 @@
             canvas.addEventListener('mouseup',function(){
                 isMousePressed = false;
                 save_last();
-
             });
 
             canvas.addEventListener('click',(e)=>useTool(e));
 
-            /*Muestra al usuario el color actual del pincel*/
+            /*Muestra al usuario el color actual del pincel y del relleno--*/
             brush_color.addEventListener('change',function(){
                 ctx.strokeStyle = strokeCurrentColor = this.value;
-                document.querySelector('#curr_stroke_color').style.backgroundColor = strokeCurrentColor;
+                document.querySelector('#curr_stroke_color').style.backgroundColor = this.value;
             });
 
             fill_color.addEventListener('change',function(){
                 ctx.fillStyle = fillCurrentColor = this.value;
-                document.querySelector('#curr_fill_color').style.backgroundColor = fillCurrentColor;
+                document.querySelector('#curr_fill_color').style.backgroundColor = this.value;
+            });
+            /*-----------------------------------------------------------*/
+
+            /*CAMBIAR GROSOR DEL PINCEL-----------------------------------*/
+            document.querySelector('#brush_thickess').addEventListener('change',function(){
+                ctx.lineWidth = Number(this.value);
+            });
+
+            //HACER Y DESHACER CAMBIOS
+            document.querySelector('#undo_btn').addEventListener('click',function(){
+                undo_array.length > 1 ?  undoRedo(redo_array,undo_array) : ctx.clearRect(0,0,canvas.width,canvas.height);
+            });
+
+            document.querySelector('#redo_btn').addEventListener('click',function(){
+                redo_array.length >= 1 ? undoRedo(undo_array,redo_array) : '';
             });
 
             /*
-            Añadir evento a las herramientas para cambiar el 'toolType' actual
+            Añadir evento a las herramientas para cambiar el 'toolType' actual, si es 'circle' o 'square' se muestra un menú de relleno
             */
             document.querySelectorAll("input[name='tool']").forEach(element => {
                 if(element.checked){
@@ -375,7 +341,12 @@
                 }
                 element.addEventListener("click", function(e){
                     toolType = e.target.id;
-                    selectFill();
+
+                    if(toolType == 'circle' || toolType == 'square'){
+                        fill_menu.classList.replace('hidden','flex');
+                    }else{
+                        fill_menu.classList.replace('flex','hidden');
+                    }
                 });
             });
         });
