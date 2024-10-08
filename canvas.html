@@ -8,12 +8,11 @@
 </head>
 <body class="bg-rose-100">
 
-
     <h1 class="p-2 text-center text-orange-400">🖌️ Canvas 🎨</h1>
 
     <main  class="flex flex-col justify-center">
 
-        <!-- Borrar o descargar canvas -->
+        <!-- Borrar, deshacer, rehacer o descargar canvas -->
         <div class="flex flex-col items-center gap-3 p-2">
             <div class="flex gap-2">
                 <button id="undo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg hover:border-red-600 group aspect-square bg-rose-200">⬅️<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo</span></button>
@@ -23,8 +22,9 @@
             </div>
         </div>
 
-        <!-- tamaño por defecto del canvas es de 300 x 150 -->
-            <canvas class="relative w-full h-full bg-white border-8 border-red-400 cursor-crosshair " id="mainCanvas"></canvas>
+        <!-- Zona de dibujo del usuario -->
+        <canvas class="relative w-full h-full bg-white border-8 border-red-400 cursor-crosshair " id="mainCanvas"></canvas>
+
         <div class="grid justify-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
 
             <!-- Grosor del pincel -->
@@ -44,7 +44,6 @@
                     <button id="circle" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">⭕<input type="radio" name="tool" id="circle" class="absolute opacity-0 cursor-pointer"><span class="tool-name">Draw circle</span></button>
                     <button id="line" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">➖<input type="radio" name="tool" id="line" class="absolute opacity-0 cursor-pointer"><span class="tool-name">Draw Line</span></button>
                     <button id="eraser" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">💊<input type="radio" name="tool" id="eraser" class="absolute opacity-0 cursor-pointer"><span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Eraser</span></button>
-                    <button class="canvas-button group bg-rose-200">🪣<span class="tool-name">Color Bucket</span></button>
                 </div>
                 <div id="fill_figure_menu" class="hidden gap-3">
                     <label for="" class="flex gap-2">Fill<input type="radio" name="fill" id="fillyes"></label>
@@ -56,9 +55,11 @@
             <div class="flex flex-col items-center gap-3 p-2">
                 <h4 class="text-orange-400">Current Color</h4>
                 <div class="flex justify-center gap-3">
+                    <!-- Color pincel -->
                     <div class="flex justify-center gap-2">
                         <span class="self-center font-bold text-red-600">Line color</span><div id="curr_stroke_color" class="relative flex justify-center w-12 p-2 bg-black border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="brush_color"></div>
                     </div>
+                    <!-- Color relleno -->
                     <div class="flex justify-center gap-2"></div>
                         <span class="self-center font-bold text-red-600">Fill color</span><div id="curr_fill_color" class="relative flex justify-center w-12 p-2 bg-white border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="fill_color"></div>
                     </div>
@@ -88,35 +89,19 @@
 
         const fill_menu = document.querySelector('#fill_figure_menu');
 
-        let isMousePressed = false; //Determinar si está presionando el ratón.
+        let shapeStart,isMousePressed = false; //flags para saber si está empezada una figura o si el ratón está siendo presionado
 
         let coords = {x:0,y:0}; //Coordenandas del ratón
 
         let toolType;
 
-        let shapeStart = false;
+        let redo_array,undo_array = [];
 
-        let undo_array = [];
-
-        let redo_array = [];
-
-        let square = {'x':undefined,'y':undefined,'width':undefined,'height':undefined};
-        //arc(x,y,diametro,0, Math.PI * 2,true)
-        let circle = {'x':undefined,'y':undefined};
+        let shape = {'x':undefined,'y':undefined,'width':undefined,'height':undefined}; //arc(x,y,diametro,0, Math.PI * 2,true)
 
         /************************************************************************************************/
 
         //FUNCIONES----------------------------------------------------------------------------------
-
-        /*
-        Cambia el tamaño canvas cuando se redimensiona la ventana //<- motivo del desincronizar al cambiar el tamaño de ventana es porque solo
-        se ejecuta cuando carga el documento(load)
-        */
-        function resize(){
-        ctx.canvas.height = window.innerHeight;
-        ctx.canvas.width = window.innerWidth;
-        console.log(ctx.canvas.width);
-        }
 
         /*
         Recoge y actualiza la posición del ratón del usuario.
@@ -186,20 +171,20 @@
                 if(!shapeStart){
                     shapeStart = true;
                     getPosition(event);
-                    square.x = coords.x;
-                    square.y = coords.y;
+                    shape.x = coords.x;
+                    shape.y = coords.y;
                     showRef(event);
                 }else{
                     getPosition(event);
-                    square.height = coords.y - square.y;
-                    square.width = coords.x - square.x;
+                    shape.height = coords.y - shape.y;
+                    shape.width = coords.x - shape.x;
 
                     if(document.querySelector('#fillyes').checked){
-                    ctx.fillRect(square.x, square.y, square.width, square.height);
+                    ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
                     }
 
-                    ctx.strokeRect(square.x, square.y, square.width, square.height);
-                    square.x = square.y = square.width = square.height = undefined;
+                    ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+                    shape.x = shape.y = shape.width = shape.height = undefined;
                     shapeStart = false;
                     save_last();
                     removeRef();
@@ -212,20 +197,20 @@
                 if(!shapeStart){
                     shapeStart = true;
                     ctx.beginPath();
-                    circle.x = coords.x;
-                    circle.y = coords.y;
+                    shape.x = coords.x;
+                    shape.y = coords.y;
                     showRef(event);
                 }else{
                     getPosition(event);
                     let clockWise = coords.x >= circle.x;
-                    ctx.arc(circle.x,circle.y,Math.abs(coords.x - circle.x),0, Math.PI * 2,clockWise);
+                    ctx.arc(shape.x,shape.y,Math.abs(coords.x - shape.x),0, Math.PI * 2,clockWise);
 
                     if(document.querySelector('#fillyes').checked){
                     ctx.fill();
                     }
 
                     ctx.stroke();
-                    circle.x = circle.y = undefined;
+                    shape.x = shape.y = undefined;
                     shapeStart = false;
                     removeRef();
                     save_last();
@@ -242,7 +227,6 @@
         /*
         Muestra la referencia del último punto
         */
-
         function showRef(event){
             var ref = document.createElement('div');
             ref.setAttribute('id','ref');
@@ -252,7 +236,7 @@
             document.body.appendChild(ref);
         }
 
-        removeRef = () =>{document.querySelector('#ref').remove();};
+        removeRef = () =>{document.querySelector('#ref').remove();}; //Eliminar referencia
 
         /*
         Limpia el Canvas
@@ -278,13 +262,29 @@
                 ctx.putImageData(undo_array[undo_array.length - 1],0,0);
         }
 
+        function handleUndo(){
+            undo_array.length > 1 ?  undoRedo(redo_array,undo_array) : ctx.clearRect(0,0,canvas.width,canvas.height);
+        }
+
+        function handleRedo(){
+            redo_array.length >= 1 ? undoRedo(undo_array,redo_array) : '';
+        }
+
+        function toggleTool(e){
+            if(e.checked){
+                toolType = e.getAttribute('id');
+            }
+        }
+
         /*EVENTLISTENERS**********************************************************************************/
         /*
         Se cargan los siguientes eventlisteners al cargar la página
         */
         window.addEventListener('load',()=>{
 
-            resize();
+            /*Setea el tamaño*/
+            ctx.canvas.height = window.innerHeight;
+            ctx.canvas.width = window.innerWidth;
 
             /*Define el color de fondo del canvas y evita que quede transparente*/
             ctx.rect(0, 0, canvas.width, canvas.height);
@@ -323,24 +323,75 @@
                 ctx.lineWidth = Number(this.value);
             });
 
-            //HACER Y DESHACER CAMBIOS
+            /*HACER Y DESHACER CAMBIOS-------------------------------------*/
             document.querySelector('#undo_btn').addEventListener('click',function(){
-                undo_array.length > 1 ?  undoRedo(redo_array,undo_array) : ctx.clearRect(0,0,canvas.width,canvas.height);
+                handleUndo();
             });
 
             document.querySelector('#redo_btn').addEventListener('click',function(){
-                redo_array.length >= 1 ? undoRedo(undo_array,redo_array) : '';
+                handleRedo();
             });
 
+            /*
+            //--SHORTCUTS PARA EL USUARIO--//
+                p -> pencil
+                l -> line
+                s -> square
+                c -> circle
+                e -> eraser
+                x -> color picker
+            */
+            document.addEventListener('keypress',function(e){
+
+                switch(String.fromCharCode(e.keyCode).toLowerCase()){
+
+                    case 'u':
+                        handleUndo();
+                        break;
+
+                    case 'r':
+                        handleRedo();
+                        break;
+
+                    case 'p':
+                        document.querySelector("input[id='pencil']").checked = true;
+                        toggleTool(document.querySelector("input[id='pencil']"));
+                        break;
+
+                    case 'l':
+                        document.querySelector("input[id='line']").checked = true;
+                        toggleTool(document.querySelector("input[id='line']"));
+                        break;
+
+                    case 's':
+                        document.querySelector("input[id='square']").checked = true;
+                        toggleTool(document.querySelector("input[id='square']"));
+                        break;
+
+                    case 'e':
+                        document.querySelector("input[id='eraser']").checked = true;
+                        toggleTool(document.querySelector("input[id='eraser']"));
+                        break;
+
+                    case 'x':
+                        document.querySelector("input[id='color_picker']").checked = true;
+                        toggleTool(document.querySelector("input[id='color_picker']"));
+                        break;
+                }
+
+            });
+
+            /*-------------------------------------------------------------*/
             /*
             Añadir evento a las herramientas para cambiar el 'toolType' actual, si es 'circle' o 'square' se muestra un menú de relleno
             */
             document.querySelectorAll("input[name='tool']").forEach(element => {
-                if(element.checked){
-                        toolType = element.getAttribute('id');
-                }
-                element.addEventListener("click", function(e){
-                    toolType = e.target.id;
+
+                toggleTool(element);
+
+                element.addEventListener("change", function(e){
+
+                    toggleTool(element);
 
                     if(toolType == 'circle' || toolType == 'square'){
                         fill_menu.classList.replace('hidden','flex');
