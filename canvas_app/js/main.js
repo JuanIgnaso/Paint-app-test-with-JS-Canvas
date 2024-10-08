@@ -313,8 +313,6 @@
             */
             document.querySelectorAll("input[name='tool']").forEach(element => {
 
-                toggleTool(element);
-
                 element.addEventListener("change", function(e){
 
                     toggleTool(element);
