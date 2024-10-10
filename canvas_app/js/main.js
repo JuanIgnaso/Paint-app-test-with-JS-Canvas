@@ -132,13 +132,10 @@
                     showRef(event);
                 }else{
                     getPosition(event);
-                    let clockWise = coords.x >= circle.x;
-                    ctx.arc(shape.x,shape.y,Math.abs(coords.x - shape.x),0, Math.PI * 2,clockWise);
-
+                    ctx.arc(shape.x,shape.y,Math.abs(coords.x - shape.x),0, Math.PI * 2,coords.x >= circle.x);
                     if(document.querySelector('#fillyes').checked){
-                    ctx.fill();
+                        ctx.fill();
                     }
-
                     ctx.stroke();
                     shape.x = shape.y = undefined;
                     shapeStart = false;
@@ -158,7 +155,7 @@
         function showRef(event){
             var ref = document.createElement('div');
             ref.setAttribute('id','ref');
-            ref.setAttribute('class','absolute w-4 h-4 border-2 border-blue-600/50 bg-blue-300/50 rounded-full');
+            ref.setAttribute('class','reference');
             ref.style.left = event.pageX + 'px';
             ref.style.top = event.pageY + 'px';
             document.body.appendChild(ref);
@@ -190,6 +187,7 @@
 
         /*Controla la función de deshacer*/
         function handleUndo(){
+            console.log('aaaa');
             undo_array.length > 1 ?  undoRedo(redo_array,undo_array) : ctx.clearRect(0,0,canvas.width,canvas.height);
         }
 
@@ -220,18 +218,21 @@
 
             toolType = 'pencil';
 
+            /*COMPORTAMIENTO DEL PINCEL*/
             document.querySelector('#clear_canvas').addEventListener('click',clearCanvas); //Limpiar el canvas
 
             canvas.addEventListener('mousedown',(e)=> {isMousePressed = true; getPosition(e)});
 
             canvas.addEventListener("mousemove", draw);
 
-            canvas.addEventListener('mouseup',function(){
+            document.addEventListener('mouseup',function(){
                 isMousePressed = false;
                 save_last();
             });
 
             canvas.addEventListener('click',(e)=>useTool(e));
+
+            /*---------------------------------------------*/
 
             /*Muestra al usuario el color actual del pincel y del relleno--*/
             brush_color.addEventListener('change',function(){
@@ -251,13 +252,9 @@
             });
 
             /*HACER Y DESHACER CAMBIOS-------------------------------------*/
-            document.querySelector('#undo_btn').addEventListener('click',function(){
-                handleUndo();
-            });
+            document.querySelector("#undo_btn").addEventListener('click',handleUndo);
 
-            document.querySelector('#redo_btn').addEventListener('click',function(){
-                handleRedo();
-            });
+            document.querySelector('#redo_btn').addEventListener('click',handleRedo);
 
             /*
             //--SHORTCUTS PARA EL USUARIO--//
@@ -269,6 +266,7 @@
                 x -> color picker
             */
             document.addEventListener('keypress',function(e){
+
 
                 switch(String.fromCharCode(e.keyCode).toLowerCase()){
 

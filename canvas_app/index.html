@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/output.css">
+    <title>Canvas 🖌️</title>
+</head>
+<body class="bg-rose-100">
+
+    <h1 class="mt-6 text-6xl text-center text-orange-400">🖌️ Canvas 🎨</h1>
+
+    <main  class="flex flex-col justify-center">
+
+        <!-- Borrar, deshacer, rehacer o descargar canvas -->
+        <header class="flex flex-col items-center gap-3 p-2 mt-2">
+            <div class="flex gap-2">
+                <button id="undo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">⬅️<p class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo <span class="font-bold pointer-events-none">u</span></p></button>
+                <button id="redo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">➡️<p class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Redo <span class="font-bold">r</span></p></button>
+                <button id="clear_canvas" class="self-end p-2 font-bold text-red-600 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 bg-rose-200">Clear Canvas</button>
+                <button onclick="saveDrawing()" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">💾<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Download drawing</span></button>
+            </div>
+        </header>
+
+        <p class="pl-2 text-sm font-bold text-orange-400 md:text-base">This practice drawing app was made with <span class="text-rose-600 text-base md:text-xl font-[Galada]">JavaScript Canvas API</span></p>
+
+        <!-- Zona de dibujo del usuario -->
+        <canvas class="relative bg-white border-8 border-red-400 cursor-crosshair" id="mainCanvas"></canvas>
+
+        <section class="grid justify-center grid-cols-1 gap-2 mb-4 sm:grid-cols-2 md:grid-cols-3">
+
+            <!-- Grosor del pincel -->
+            <div class="flex flex-col items-center gap-3 p-2">
+                <h2 class="text-orange-400">Line thickness</h2>
+                <label for="" class="flex items-center gap-3 font-bold text-red-600">Choose brush thikness<input type="range" name="" id="brush_thickess" min="1" max="100" class=" accent-orange-400"></label>
+
+            </div>
+
+            <!-- Herramientas -->
+            <div class="flex flex-col items-center gap-3 p-2">
+                <h2 class="text-orange-400">Tools</h2>
+                <div class="grid grid-cols-4 gap-2 justify-items-center lg:grid-cols-6">
+                    <button id="pencil" class="canvas-button bg-rose-200 tool group has-[:checked]:bg-rose-400"><input type="radio" name="tool" id="pencil" class="absolute opacity-0 cursor-pointer">🖌️<p class="tool-name">Paint <span class="font-bold">p</span></p></button>
+                    <button id="color_picker" class="canvas-button bg-rose-200 tool group has-[:checked]:bg-rose-400">🩸<input type="radio" name="tool" id="color_picker" class="absolute opacity-0 cursor-pointer"><p class="tool-name">Color Picker <span class="font-bold">x</span></p></button>
+                    <button id="square" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">⏹️<input type="radio" name="tool" id="square" class="absolute opacity-0 cursor-pointer"><p class="tool-name">Draw square <span class="font-bold">s</span></p></button>
+                    <button id="circle" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">⭕<input type="radio" name="tool" id="circle" class="absolute opacity-0 cursor-pointer"><p class="tool-name">Draw circle <span class="font-bold">c</span></p></p></button>
+                    <button id="line" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">➖<input type="radio" name="tool" id="line" class="absolute opacity-0 cursor-pointer"><p class="tool-name">Draw Line <span class="font-bold">l</span></p></p></button>
+                    <button id="eraser" class="canvas-button tool group bg-rose-200 has-[:checked]:bg-rose-400">💊<input type="radio" name="tool" id="eraser" class="absolute opacity-0 cursor-pointer"><p class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Eraser <span class="font-bold">e</span></p></p></button>
+                </div>
+                <div id="fill_figure_menu" class="hidden gap-3">
+                    <label for="" class="flex gap-2">Fill<input type="radio" name="fill" id="fillyes"></label>
+                    <label for="" class="flex gap-2">No fill<input type="radio" name="fill" id="fillno"></label>
+                </div>
+
+                <h5 onclick="seeShortcuts()" id="shortcuts" class="text-red-600 cursor-pointer">Key Shortcuts ⌨️</h5>
+
+                <div id="shortcuts-menu" class="hidden p-4 border-4 rounded-lg border-red-400/50">
+                    <ul class="text-red-600">
+                        <li>Pencil - <strong>p</strong></li>
+                        <li>Line - <strong>l</strong></li>
+                        <li>Square - <strong>s</strong></li>
+                        <li>Circle - <strong>c</strong> </li>
+                        <li>Color picker - <strong>x</strong></li>
+                        <li>Eraser - <strong>e</strong></li>
+                        <li>Undo trace - <strong>u</strong></li>
+                        <li>Redo trace - <strong>r</strong></li>
+                    </ul>
+                </div>
+                <script src="./js/toggleMenu.js"></script>
+            </div>
+
+            <!-- Color actual -->
+            <div class="flex flex-col items-center gap-3 p-2">
+                <h2 class="text-orange-400">Current Color</h2>
+                <div class="flex justify-center gap-3">
+                    <!-- Color pincel -->
+                    <div class="flex justify-center gap-2">
+                        <span class="self-center font-bold text-red-600">Line color</span><div id="curr_stroke_color" class="relative flex justify-center w-12 p-2 bg-black border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="brush_color"></div>
+                    </div>
+                    <!-- Color relleno -->
+                    <div class="flex justify-center gap-2"></div>
+                        <span class="self-center font-bold text-red-600">Fill color</span><div id="curr_fill_color" class="relative flex justify-center w-12 p-2 bg-white border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="fill_color"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- SCRIPT -->
+    <script src="./js/main.js"></script>
+
+    <!-- FOOTER DE LA PÁGINA -->
+    <footer class="pt-4 pb-2 pl-4 pr-4 text-center bg-rose-300">
+
+        <div class="w-3/4 m-auto mt-8 mb-8 border-2 border-white lg:w-1/2"></div>
+            <section class="flex flex-col justify-center gap-8 md:flex-row">
+                <p class="text-4xl font-extrabold text-rose-600 font-['Galada']">Canvas Web App</p>
+
+                <ol class="flex flex-col items-center gap-2 md:items-start">
+                    <li><p class="text-2xl font-extrabold border-b-2 text-rose-500 border-white/50 font-[Galada]">Contactos</p></li>
+                    <li class=""><a class="font-bold text-rose-100" href="https://github.com/JuanIgnaso">GitHub</a></li>
+                    <li class=""><a class="font-bold text-rose-100" href="https://www.linkedin.com/in/juan-ignacio-navarrete-soli%C3%B1o-935308282/">Linkedin</a></li>
+                </ol>
+            </section>
+            <span class="block mt-2 text-sm text-center text-rose-100 sm:text-right">© 2024 <strong class="hover:underline">Juan Navarrete</strong></span>
+    </footer>
+</body>
+</html>

@@ -1,10 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Galada&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base{
+
+    /*Forma de definir fuentes custom, en este caso cogidas de Google Font*/
+
     h1,h2,h3,h4,h5,h6{
         @apply font-extrabold;
+        font-family: "Galada", cursive;
     }
 
     h1{
@@ -25,6 +31,8 @@
     h6{
         @apply text-lg;
     }
+
+
 }
 
 @layer components{
@@ -34,5 +42,13 @@
 
     .tool-name{
         @apply absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap;
+    }
+
+    .reference{
+        @apply absolute w-4 h-4 border-2 rounded-full border-blue-600/50 bg-blue-300/50;
+    }
+
+    .aa{
+        @apply absolute w-4 h-4 border-2 rounded-full border-blue-600/50 bg-blue-300/50;
     }
 }
