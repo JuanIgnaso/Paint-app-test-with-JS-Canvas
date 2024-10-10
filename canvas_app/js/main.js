@@ -187,8 +187,8 @@
 
         /*Controla la función de deshacer*/
         function handleUndo(){
-            console.log('aaaa');
-            undo_array.length > 1 ?  undoRedo(redo_array,undo_array) : ctx.clearRect(0,0,canvas.width,canvas.height);
+            undo_array.length > 1 ? undoRedo(redo_array,undo_array) : ctx.clearRect(0,0,canvas.width,canvas.height);
+            console.log(redo_array.length);
         }
 
         /*Controla la función de rehacer*/

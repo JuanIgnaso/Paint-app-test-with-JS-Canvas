@@ -15,10 +15,10 @@
         <!-- Borrar, deshacer, rehacer o descargar canvas -->
         <header class="flex flex-col items-center gap-3 p-2 mt-2">
             <div class="flex gap-2">
-                <button id="undo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">⬅️<p class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo <span class="font-bold pointer-events-none">u</span></p></button>
-                <button id="redo_btn" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">➡️<p class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Redo <span class="font-bold">r</span></p></button>
-                <button id="clear_canvas" class="self-end p-2 font-bold text-red-600 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 bg-rose-200">Clear Canvas</button>
-                <button onclick="saveDrawing()" class="relative flex justify-center w-12 p-2 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">💾<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Download drawing</span></button>
+                <button id="undo_btn" class="relative flex justify-center w-12 p-2 transition duration-300 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">⬅️<p class="absolute z-10 hidden p-1 text-sm transition duration-300 rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Undo <span class="font-bold pointer-events-none">u</span></p></button>
+                <button id="redo_btn" class="relative flex justify-center w-12 p-2 transition duration-300 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">➡️<p class="absolute z-10 hidden p-1 text-sm transition duration-300 rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Redo <span class="font-bold">r</span></p></button>
+                <button id="clear_canvas" class="self-end p-2 font-bold text-red-600 transition duration-300 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 bg-rose-200">Clear Canvas</button>
+                <button onclick="saveDrawing()" class="relative flex justify-center w-12 p-2 transition duration-300 border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 hover:border-red-600 group aspect-square bg-rose-200">💾<span class="absolute z-10 hidden p-1 text-sm rounded-lg pointer-events-none group-hover:block text-white/75 bg-slate-800/50 whitespace-nowrap">Download drawing</span></button>
             </div>
         </header>
 
@@ -52,7 +52,7 @@
                     <label for="" class="flex gap-2">No fill<input type="radio" name="fill" id="fillno"></label>
                 </div>
 
-                <h5 onclick="seeShortcuts()" id="shortcuts" class="text-red-600 cursor-pointer">Key Shortcuts ⌨️</h5>
+                <h5 onclick="seeShortcuts()" id="shortcuts" class="text-red-600 transition duration-300 cursor-pointer hover:text-red-400">Key Shortcuts ⌨️</h5>
 
                 <div id="shortcuts-menu" class="hidden p-4 border-4 rounded-lg border-red-400/50">
                     <ul class="text-red-600">
@@ -75,19 +75,18 @@
                 <div class="flex justify-center gap-3">
                     <!-- Color pincel -->
                     <div class="flex justify-center gap-2">
-                        <span class="self-center font-bold text-red-600">Line color</span><div id="curr_stroke_color" class="relative flex justify-center w-12 p-2 bg-black border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="brush_color"></div>
+                        <span class="self-center font-bold text-red-600">Line color</span><div id="curr_stroke_color" class="relative flex justify-center w-12 p-2 transition duration-300 bg-black border-4 border-red-400 rounded-lg shadow-inner hover:border-red-600 shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="brush_color"></div>
                     </div>
                     <!-- Color relleno -->
                     <div class="flex justify-center gap-2"></div>
-                        <span class="self-center font-bold text-red-600">Fill color</span><div id="curr_fill_color" class="relative flex justify-center w-12 p-2 bg-white border-4 border-red-400 rounded-lg shadow-inner shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="fill_color"></div>
+                        <span class="self-center font-bold text-red-600">Fill color</span><div id="curr_fill_color" class="relative flex justify-center w-12 p-2 transition duration-300 bg-white border-4 border-red-400 rounded-lg shadow-inner hover:border-red-600 shadow-black/50 group aspect-square"><input class="absolute opacity-0 cursor-pointer" type="color" name="" id="fill_color"></div>
                     </div>
                 </div>
             </section>
         </div>
     </main>
 
-    <!-- SCRIPT -->
-    <script src="./js/main.js"></script>
+
 
     <!-- FOOTER DE LA PÁGINA -->
     <footer class="pt-4 pb-2 pl-4 pr-4 text-center bg-rose-300">
@@ -104,5 +103,8 @@
             </section>
             <span class="block mt-2 text-sm text-center text-rose-100 sm:text-right">© 2024 <strong class="hover:underline">Juan Navarrete</strong></span>
     </footer>
+
+        <!-- SCRIPT -->
+        <script src="./js/main.js"></script>
 </body>
 </html>

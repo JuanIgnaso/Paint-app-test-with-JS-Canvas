@@ -22,3 +22,13 @@ El usuario dispone de:
 <li>Save Canvas: pasar el dibujo a una imagen para poder guardarlo</li>
 <li>Undo/Redo: deshacer y reacer los últimos cambios realizados</li>
 </ul>
+
+## Fallos conocidos
+
+- Botón de **Undo** y **Redo** no funcionan, pero si sus atajos de teclado **u** y **r**.
+- Div usado de referencia cuando se usa la herramienta **line,square o circle** no carga o aparece siempre.
+- Puntero desincronizado al redimensionar la ventana.
+
+## Como usarlo
+
+Se puede probar si se dispone de cualquier editor de código que disponga de la herramienta de [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) o similar.
